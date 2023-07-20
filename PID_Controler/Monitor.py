@@ -1,10 +1,12 @@
-#
-# version 1.0 -- 2023/07/06 -- by JLC
-#
-# Some code comes from https://ymt-lab.com/en/post/2021/pyqt5-serial-monitor/"
-#
-#=========================================================================
-import os, sys, platform
+__author__      = "Jean-Luc CHARLES, aka JLC"
+__copyright__   = "Copyright 2023"
+__license__     = "GPL3"
+__version__     = "1.0.1"
+__date__        = "2023/07/23"
+__maintainer__  = "JLC"
+__email__       = "jean-luc.charles@mailo.com"
+__credits__     = "https://ymt-lab.com/en/post/2021/pyqt5-serial-monitor/"
+
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QCheckBox,
@@ -12,13 +14,10 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLa
                              QComboBox)
 from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
 from PyQt5.QtGui import QTextCursor, QFont
-
-from time import sleep, time, strftime
-import numpy as np
+from time import strftime
 from collections import deque
-
 from Grapher import Grapher
-#=========================================================================
+
 class Monitor(QWidget):
     '''
     To read data coming from the serial link and send commands to the microcontroler
@@ -45,6 +44,7 @@ class Monitor(QWidget):
         
         self.port  = None       # The serial port, see xxxxxx 
         self.data  = ""         # the data collected from the serial link 
+        self.dict_var  = {}     # The dictionary of the firld to display and plot, with their checkboxes
                 
         # The list of the labeled Field widgets to show data received from the serial link
         self.labeled_fields  = []
@@ -70,7 +70,6 @@ class Monitor(QWidget):
             
         self.serial_view  = SerialDataView(self)
         self.graph_widget = Grapher(self)
-
         #
     	# CSV ASCII output file
     	#
@@ -78,8 +77,10 @@ class Monitor(QWidget):
         self.data_format  = "{:8.2f}\t{:8.2f}\t{:4.2f}\t{:4.2f}\n"    
         
         L  = self.graph_widget.graph_length.value()
+        
         self.nb_field     = self.ProcessInoFile()  # the number of fields received on the serial link
         self.all_field    = deque([[0]*self.nb_field for _ in range(L)], L)
+
 
         # create the tab graphical interface:
         self.__initUI()
@@ -101,10 +102,8 @@ class Monitor(QWidget):
            - <mess += ",COM,";  // Command>     for a serila output
            
         '''
-        
         try:    
             with open(Monitor.ino_file, 'r') as f:
-                
                 for line in f.readlines():
                     line = line.strip()
                     if 'case' in line:
@@ -145,6 +144,9 @@ class Monitor(QWidget):
             self.serial_toolbar.serialControlEnable(True)
         
     def ReadFromSerialPort(self):
+        '''
+        To read data received on the serial link.
+        '''
         
         data = self.port.readAll()
         string = QtCore.QTextStream(data).readAll()

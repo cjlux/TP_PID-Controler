@@ -1,7 +1,11 @@
-#
-# version 1.0 -- 2023/07/06 -- by JLC
-#
-#=========================================================================
+__author__      = "Jean-Luc CHARLES, aka JLC"
+__copyright__   = "Copyright 2023"
+__license__     = "GPL3"
+__version__     = "1.0.1"
+__date__        = "2023/07/23"
+__maintainer__  = "JLC"
+__email__       = "jean-luc.charles@mailo.com"
+
 
 import numpy as np
 import os
@@ -14,22 +18,23 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 
 class Plotter(QWidget):
-    ''' Widget de tracé d'une courbe paramétrée'''
+    ''' 
+    Widget to plot the curve for each field.
+    '''
 
-    colors = ['gray', 'orange' , 'green', 'red', 'purple', 'brown', 'pink', 'blue', 'olive', 'cyan' ]
+    colors = ['gray', 'olive', 'orange' , 'green', 'red', 'purple', 'brown', 'pink', 'blue', 'cyan' ]
 
     def __init__(self, parent):
 
-        # appel du constructeur de la classe de base :
+        # call the base class constructor:
         QWidget.__init__(self, parent)
 
-        # *** Bonnes pratiques  ***
-        #   Définir dans le constructeur les données persistantes en tant 
-        #   qu'attributs, et si on ne connaît pas leur valeur à ce moment 
-        #   on peut utiliser None
+        # *** Good practices  ***
+         # Define in the constructor the persisted data as attributes, 
+         # and if we don't know their value at this time we can use 'None'.
 
-        self.parent    = parent # fenêtre principale de l'application
-        self.dict_var  = {}     # Le dictionnaire des varaiables à tracer avec leurs checkboxes
+        self.parent    = parent # Main applicaion window
+        self.dict_var  = {}     # The dictionary of the firld to display and plot, with their checkboxes
         self.fig       = None   # The figure of the plot
         self.ax1       = None   # First Y axis (left side of the plot)
         self.ax2       = None   # Second Y axis (rifht side of the plot)
@@ -40,7 +45,7 @@ class Plotter(QWidget):
         self.ylim1     = None   # ymin, ymax for ax1 (left side of the plot)
         self.ylim2     = None   # ymin, ymax for ax2 (left side of the plot)
 
-        self.__initUI()   # Initialisation de l'interface utilisateur
+        self.__initUI()   # Initialize the users graphical interface
 
     def __initUI(self):
 
@@ -49,8 +54,6 @@ class Plotter(QWidget):
 
         # la zone de tracé:
         trace_box = QGridLayout()
-
-        #self.axes    = self.figure.add_subplot(111)
         
         self.fig, self.ax1 = plt.subplots()   
         self.ax1.set_title('PID Controler plot')
@@ -62,31 +65,28 @@ class Plotter(QWidget):
         
         trace_box.addWidget(self.canvas, 0, 0)
 
-        # La barre des boutons Matplotlib:
+        # The Matplotlib toolbar:
         bar = QHBoxLayout()
         
         btn = QPushButton('Plot')
         btn.clicked.connect(self.Plot)
         btn.setFixedSize(50,25)
         bar.addWidget(btn)
-        #bar.addStretch(1)
         
         self.CSV_combo = QComboBox()
         self.CSV_combo.addItem('Choose CSV file')
-        self.CSV_combo.setFixedSize(100,25)
+        self.CSV_combo.setFixedSize(250,25)
         self.CSV_combo.activated[str].connect(self.LoadCSV_File)
         self.CSV_combo.enterEvent = self.FillCVS_Combo
         bar.addWidget(self.CSV_combo)
         bar.addStretch(1)
         
         trace_box.addLayout(bar, 1,0)
-        #trace_box.addStretch(1)
         
         self.toolbar = NavigationToolbar(self.canvas, self)
         trace_box.addWidget(self.toolbar, 2, 0)
-        #trace_box.addStretch(1)
         
-        # La zone de controle:
+        # The control zone:
         ctrl_box = QGridLayout()
         ctrl_box.setContentsMargins(2, 2, 2, 2)
         
@@ -94,7 +94,7 @@ class Plotter(QWidget):
             
             # skip the "MS" <Elapsed time (ms)> filrd:
             if key == 'MS': continue
-            
+
             label = QLabel(comment)
             
             check = QCheckBox()
@@ -104,7 +104,6 @@ class Plotter(QWidget):
             check.setStyleSheet("QCheckBox::indicator { width:30px; height:30px; border: 3px solid;}")            
             check.setStyleSheet(f"QCheckBox {{ color:{color};}}")
             check.setChecked(False)
-            check.stateChanged.connect(lambda state, k=key: self.select_var(k, state))
             
             btn = QPushButton()
             btn.setCheckable(False)
@@ -114,7 +113,7 @@ class Plotter(QWidget):
             btn.setStyleSheet(f"QPushButton {{ color:{color};}}")
             btn.setFixedSize(30,25)
             btn.setToolTip('L: plot in the Left axis, R: plot in the Right axis')
-            btn.clicked.connect(lambda state, k=key: self.select_axis(k, state))
+            
             self.dict_var[key]=(check, btn)
 
             if key == 'SPE':
@@ -125,7 +124,11 @@ class Plotter(QWidget):
             ctrl_box.addWidget(check, row, 1)
             ctrl_box.addWidget(btn, row, 2)
             
-        
+        for key in self.dict_var:
+            check, btn = self.dict_var[key]
+            check.stateChanged.connect(lambda state, k=key: self.select_var(k, state))
+            btn.clicked.connect(lambda state, k=key: self.select_axis(k, state))
+            
         hbox.addLayout(trace_box)
         hbox.addLayout(ctrl_box)
 
@@ -164,8 +167,10 @@ class Plotter(QWidget):
         
         X = all_field[0] # The x values (abscissa) for the plot
         
-        for field, (key, comment), color in zip(all_field[1:], field_prop[1:], Plotter.colors ):
-            #if key == "SPM": continue
+        for field, (key, comment), color in zip(all_field, field_prop, Plotter.colors ):
+            # skip the time field 'MS':
+            if key == "MS": continue
+            
             check, btn = self.dict_var[key]
             # plot only firled with the check widget checked:
             if not check.checkState(): 

@@ -1,7 +1,10 @@
-#
-# version 1.0 -- 2023/07/06 -- by JLC
-#
-#=========================================================================
+__author__      = "Jean-Luc CHARLES, aka JLC"
+__copyright__   = "Copyright 2023"
+__license__     = "GPL3"
+__version__     = "1.0.1"
+__date__        = "2023/07/23"
+__maintainer__  = "JLC"
+__email__       = "jean-luc.charles@mailo.com"
 
 import pyqtgraph as pg
 
