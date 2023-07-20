@@ -132,8 +132,10 @@ class Grapher(QWidget):
         try:
             with open(file_name, "w") as F:
                 # write header line:
-                line = [f"#{key}[{comment}]" for key, comment in self.parent.field_prop]
-                F.write(";".join(line) + "\n")
+                line1 = [f"#{key}" for key, comment in self.parent.field_prop]
+                line2 = [f"#{comment}" for key, comment in self.parent.field_prop]
+                F.write(";".join(line1) + "\n")
+                F.write(";".join(line2) + "\n")
                 # write the fields values:
                 for field in self.parent.all_field:
                     line = [f"{data:.4f}" for data in field]

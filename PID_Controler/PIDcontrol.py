@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QTabWidget, QAction, QSt
 from PyQt5.QtGui import QIcon
 from PyQt5 import QtCore, QtWidgets
 
-from SerialMonitor import SerialMonitor
+from Monitor import Monitor
 from Plotter import Plotter
 
 class PIDcontrol(QMainWindow):
@@ -42,8 +42,8 @@ class PIDcontrol(QMainWindow):
         self.tabs = QTabWidget()
         
         ### Les onglets de l'applications :        
-        self.serialPlotter_tab = SerialMonitor(self)
-        self.plotter_tab       = Plotter(self)
+        self.monitor_tab = Monitor(self)
+        self.plotter_tab = Plotter(self)
         
         ### Status Bar
         self.setStatusBar(QStatusBar(self))
@@ -62,8 +62,8 @@ class PIDcontrol(QMainWindow):
         self.setWindowTitle('PID controler')
         self.statusBar()  # Activate status bar
         
-        self.tabs.addTab(self.serialPlotter_tab, "Serial controler")
-        self.tabs.addTab(self.plotter_tab, "Data processing")
+        self.tabs.addTab(self.monitor_tab, "Monitor")
+        self.tabs.addTab(self.plotter_tab, "Plotter")
         
         self.setCentralWidget(self.tabs)
 
