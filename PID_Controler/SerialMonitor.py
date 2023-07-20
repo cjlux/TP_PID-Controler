@@ -21,7 +21,7 @@ from Grapher import Grapher
 from SerialToolBar import SerialPortToolBar
 
 #=========================================================================
-class SerialPlotter(QWidget):
+class SerialMonitor(QWidget):
     '''To read data coming from the serial link and send commands to the microcontroler
     using the serial link
     '''
@@ -118,7 +118,7 @@ class SerialPlotter(QWidget):
                         self.field_prop.append((key, comment))
                 
         except:
-            print(f"Failed to process file {SerialPlotter.ino_file}")
+            print(f"Failed to process file {SerialMonitor.ino_file}")
         
         return len(self.field_prop)
         
@@ -207,7 +207,7 @@ class SerialDataView(QWidget):
         self.serialData.setMinimumSize(650,400)
         self.serialData.setFont(QFont('Courier New', 8))
         self.serialData.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        self.serialData.setFixedWidth(500)
+        self.serialData.setFixedWidth(600)
 
         self.setLayout(QGridLayout())
         self.layout().addWidget(self.serialData, 0, 0)

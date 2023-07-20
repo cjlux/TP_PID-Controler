@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QTabWidget, QAction, QSt
 from PyQt5.QtGui import QIcon
 from PyQt5 import QtCore, QtWidgets
 
-from SerialPlotter import SerialPlotter
+from SerialMonitor import SerialMonitor
 from Plotter import Plotter
 
 class PIDcontrol(QMainWindow):
@@ -47,7 +47,7 @@ class PIDcontrol(QMainWindow):
         self.tabs = QTabWidget()
         
         ### Les onglets de l'applications :        
-        self.serialPlotter_tab = SerialPlotter(self)
+        self.serialPlotter_tab = SerialMonitor(self)
         self.plotter_tab       = Plotter(self)
         
         ### Status Bar
@@ -79,15 +79,6 @@ class PIDcontrol(QMainWindow):
 
         ##### The menu 'File'
         file_menu = self.menubar.addMenu('File')
-
-        ### Load a CSV file :
-        qa = QAction(QIcon(PIDcontrol.icone_dir+'/open.png'),
-                           "Load CSV", self)
-        qa.setShortcut('Ctrl+O')
-        qa.setStatusTip('Loads a data file ...')
-        # connexion with the 'open_config_file':
-        qa.triggered.connect(self.LoadCSV_File)
-        file_menu.addAction(qa)
         
         ### Quit :
         qa = QAction(QIcon(PIDcontrol.icone_dir+'/exit.png'),\
@@ -96,19 +87,7 @@ class PIDcontrol(QMainWindow):
         qa.setStatusTip("Quit the application")
         qa.triggered.connect(self.Close)
         file_menu.addAction(qa)
-          
-        ##### The menu 'Config'
-        conf_menu = self.menubar.addMenu('Config')
-
-        ### Load a config file :
-        qa = QAction(QIcon(PIDcontrol.icone_dir+'/open.png'),
-                           "Load a config file", self)
-        qa.setShortcut('Ctrl+C')
-        qa.setStatusTip('Loads a configuration file ...')
-        # connexion with the 'LoadConfigFile' method:
-        qa.triggered.connect(self.LoadConfigFile)
-        conf_menu.addAction(qa)
-   
+           
     def LoadCSV_File(self):
         '''
         Load data previously saved in a CSV file

@@ -45,7 +45,7 @@ class Plotter(QWidget):
 
     def __initUI(self):
 
-        hbox = QHBoxLayout()
+        hbox = QHBoxLayout(self)
         self.setLayout(hbox)
 
         # la zone de tracé:
