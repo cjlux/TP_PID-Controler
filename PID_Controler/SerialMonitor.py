@@ -22,7 +22,8 @@ from SerialToolBar import SerialPortToolBar
 
 #=========================================================================
 class SerialMonitor(QWidget):
-    '''To read data coming from the serial link and send commands to the microcontroler
+    '''
+    To read data coming from the serial link and send commands to the microcontroler
     using the serial link
     '''
 
@@ -102,9 +103,12 @@ class SerialMonitor(QWidget):
            - <mess += ",COM,";  // Command>     for a serila output
            
         '''
-        try:
-            with open(SerialPlotter.ino_file, 'r') as f:
+        
+        try:    
+            with open(SerialMonitor.ino_file, 'r') as f:
+                
                 for line in f.readlines():
+                    print(line)
                     line = line.strip()
                     if 'case' in line:
                         print(line)
@@ -302,7 +306,7 @@ class CommandWidget(QWidget):
         i = 0
         for key, comment in self.parent.button_prop:
             
-            if key == SerialPlotter.start_char or key == SerialPlotter.stop_char:
+            if key == SerialMonitor.start_char or key == SerialMonitor.stop_char:
                 print(f'skipping <{key}, {comment}>')
                 continue
 

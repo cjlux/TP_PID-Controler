@@ -55,6 +55,7 @@ class Plotter(QWidget):
         self.axes.set_title('PID Controler plot')
         self.figure.subplots_adjust(left=0.1,right=0.98,bottom=0.1,top=0.95)
         self.canvas  = FigureCanvas(self.figure)
+        
         trace_box.addWidget(self.canvas)
 
         # La barre des boutons Matplotlib:
@@ -64,7 +65,7 @@ class Plotter(QWidget):
         btn.clicked.connect(self.Plot)
         btn.setFixedSize(50,25)
         bar.addWidget(btn)
-        #bar.addStretch(1)
+        bar.addStretch(1)
         
         self.CSV_combo = QComboBox()
         self.CSV_combo.addItem('Choose CSV file')
@@ -72,7 +73,7 @@ class Plotter(QWidget):
         self.CSV_combo.activated[str].connect(self.LoadCSV_File)
         self.CSV_combo.enterEvent = self.FillCVS_Combo
         bar.addWidget(self.CSV_combo)
-        #bar.addStretch(1)
+        bar.addStretch(1)
         
         trace_box.addLayout(bar)
         trace_box.addStretch(1)
@@ -80,8 +81,6 @@ class Plotter(QWidget):
         self.toolbar = NavigationToolbar(self.canvas, self)
         trace_box.addWidget(self.toolbar)
         trace_box.addStretch(1)
-        
-        trace_box.addLayout(bar)
         
         # La zone de controle:
         ctrl_box = QGridLayout()

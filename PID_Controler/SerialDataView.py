@@ -9,7 +9,8 @@ from PyQt5.QtWidgets import (QWidget, QTextEdit, QGridLayout, QSizePolicy)
 from QtGui import QTextCursor
 
 class SerialDataView(QWidget):
-    '''A Qt Widget to view data coming through a serial link (RS232, USB...).
+    '''
+    A Qt Widget to view data lines coming through a serial link (RS232, USB...).
     '''
     
     def __init__(self, parent):

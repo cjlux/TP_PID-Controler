@@ -29,12 +29,7 @@ class PIDcontrol(QMainWindow):
         # Gestion des répertoires statiques
         if not os.path.isdir(PIDcontrol.icone_dir) :
             print("Répertoire des icônes non trouvé.")
-
-        if not os.path.isdir(PIDcontrol.image_dir) :
-            msg = "Répertoire des images créés :\n\t'{}'"
-            print(msg.format(PIDcontrol.image_dir))
-            os.mkdir(PIDcontrol.image_dir)
-
+            
         # *** Bonnes pratiques  ***
         #   Définir dans le constructeur les données persistantes en tant 
         #   qu'attributs, et si on ne connaît pas leur valeur à ce moment 
