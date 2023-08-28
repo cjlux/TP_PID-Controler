@@ -1,9 +1,10 @@
-# requirements based on Ubuntu 22 with python3.6.x installed:
+# requirements based on Ubuntu 22 with python3.10.x installed:
 PyQt5==5.15.9
 PyQt5-Qt5==5.15.2
 PyQt5-sip==12.12.1
 pyqtgraph==0.13.3
-pyserial==3.5
+pyserial
 matplotlib
 numpy
 pandas
+
