@@ -8,8 +8,13 @@ __email__       = "jean-luc.charles@mailo.com"
 
 import pyqtgraph as pg
 
-from PyQt5.QtWidgets import (QWidget, QPushButton, QLabel, QSpinBox, QGridLayout, QHBoxLayout,
-                             QSizePolicy, QLineEdit, QMessageBox)
+try:
+    from PyQt5.QtWidgets import (QWidget, QPushButton, QLabel, QSpinBox, QGridLayout, QHBoxLayout,
+                                 QSizePolicy, QLineEdit, QMessageBox)
+except:
+    from PyQt6.QtWidgets import (QWidget, QPushButton, QLabel, QSpinBox, QGridLayout, QHBoxLayout,
+                                 QSizePolicy, QLineEdit, QMessageBox)    
+
 import numpy as np
 import time
 
@@ -18,6 +23,10 @@ class Grapher(QWidget):
     def __init__(self, parent):
         
         super(Grapher, self).__init__(parent)
+
+        # *** Good practices  ***
+        # Define in the constructor the persisted data as attributes, 
+        # and if we don't know their value at this time we can use 'None'.
         
         self.parent         = parent
         self.graphWidget    = pg.PlotWidget(self)   # The plotter
@@ -34,6 +43,7 @@ class Grapher(QWidget):
         
     def __initUI(self):
         
+        print("Grapher.__initUI")
         grid =  QGridLayout()
         self.setLayout(grid)
 
@@ -43,14 +53,14 @@ class Grapher(QWidget):
         self.graphWidget.showGrid(x=True, y=True)
         self.graphWidget.setLabel('bottom', 'time [ms]')
         self.graphWidget.setMinimumWidth(600)
-        self.graphWidget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.graphWidget.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         
         line = QHBoxLayout()
         
         self.startstop_btn.setText("START")
         self.startstop_btn.setEnabled(False)
         self.startstop_btn.setCheckable(True)
-        self.startstop_btn.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.startstop_btn.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         self.startstop_btn.setFixedSize(70,25)
         self.startstop_btn.setToolTip('Send the start/stop command to the controller')
         self.startstop_btn.clicked.connect(lambda state: self.StartStop(state))
@@ -63,14 +73,14 @@ class Grapher(QWidget):
         
         self.file_prefix.setText('')
         self.file_prefix.setEnabled(False)
-        self.file_prefix.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.file_prefix.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         self.file_prefix.setFixedSize(50, 25)
         self.file_prefix.setToolTip('Optional prefix to the data file name')
         line.addWidget(self.file_prefix)
 
         self.file_name.setText('name of the CSV data file')
         self.file_name.setEnabled(False)
-        self.file_name.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.file_name.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         self.file_name.setFixedSize(200, 25)
         self.file_name.setToolTip('The name of the CSV data file to save')
 

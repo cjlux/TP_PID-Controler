@@ -7,13 +7,16 @@ __maintainer__  = "JLC"
 __email__       = "jean-luc.charles@mailo.com"
 
 import numpy as np
-import os, sys, platform
+import os, platform
 
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QTabWidget, QAction, QStatusBar,
-                             QLabel, QMessageBox)
-
-from PyQt5.QtGui import QIcon
-from PyQt5 import QtCore, QtWidgets
+try:
+    from PyQt5.QtWidgets import (QMainWindow, QTabWidget, QAction, QStatusBar,
+                                 QLabel, QMessageBox)
+    from PyQt5.QtGui import QIcon, QGuiApplication
+except:
+    from PyQt6.QtWidgets import (QMainWindow, QTabWidget, QStatusBar,
+                                 QLabel, QMessageBox)
+    from PyQt6.QtGui import QIcon, QGuiApplication, QAction
 
 from Monitor import Monitor
 from Plotter import Plotter
@@ -35,10 +38,9 @@ class PIDcontrol(QMainWindow):
         if not os.path.isdir(PIDcontrol.icone_dir) :
             print("Répertoire des icônes non trouvé.")
             
-        # *** Bonnes pratiques  ***
-        #   Définir dans le constructeur les données persistantes en tant 
-        #   qu'attributs, et si on ne connaît pas leur valeur à ce moment 
-        #   on peut utiliser None
+        # *** Good practices  ***
+        # Define in the constructor the persisted data as attributes, 
+        # and if we don't know their value at this time we can use 'None'.
 
         ### Attributs (objets persistants)
         self.menubar = self.menuBar() # indispensable pour Mac
@@ -62,6 +64,8 @@ class PIDcontrol(QMainWindow):
         '''
         Mettre en place les éléments de l'interface graphique
         '''
+        
+        print("PIDcontrol.__initUI")
         self.resize(800, 600)
         self.center()
         self.setWindowTitle('PID controler')
@@ -103,12 +107,12 @@ class PIDcontrol(QMainWindow):
 
     def center(self):
         '''Pour centrer la fenêtre dans l'écran'''
-        desktop = QApplication.desktop()
-        n = desktop.screenNumber(self.cursor().pos())
-        screen_center = desktop.screenGeometry(n).center()
-        geo_window = self.frameGeometry()
-        geo_window.moveCenter(screen_center)
-        self.move(geo_window.topLeft())
+        qr = self.frameGeometry()
+        cp = self.screen().availableGeometry().center()
+
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
         
     def closeEvent(self, event):        
         '''
@@ -119,9 +123,9 @@ class PIDcontrol(QMainWindow):
         rep = QMessageBox.question(self,        
             'Message',                          # bar title
             "Do you realy want to quit ?",      # text in the pop up window
-            QMessageBox.Yes | QMessageBox.No,   # butons 'Yes' & 'No'
-            QMessageBox.No)                     # 'No' is the default
-        if rep == QMessageBox.Yes:
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,   # butons 'Yes' & 'No'
+            QMessageBox.StandardButton.No)                     # 'No' is the default
+        if rep == QMessageBox.StandardButton.Yes:
             event.accept() 
         else:
             event.ignore() 
@@ -133,8 +137,8 @@ class PIDcontrol(QMainWindow):
         rep = QMessageBox.question(self,        
             'Message',                          # bar title
             "Do you realy want to quit ?",      # text in the pop up window
-            QMessageBox.Yes | QMessageBox.No,   # butons 'Yes' & 'No'
-            QMessageBox.No)                     # 'No' is the default
-        if rep == QMessageBox.Yes:
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,   # butons 'Yes' & 'No'
+            QMessageBox.StandardButton.No)                     # 'No' is the default
+        if rep == QMessageBox.StandardButton.Yes:
             self.close()
         

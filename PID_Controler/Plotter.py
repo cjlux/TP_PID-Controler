@@ -9,8 +9,16 @@ __email__       = "jean-luc.charles@mailo.com"
 
 import numpy as np
 import os
-from PyQt5.QtWidgets import (QWidget, QGridLayout, QVBoxLayout, QHBoxLayout,
-                             QCheckBox, QPushButton, QLabel, QComboBox, QSizePolicy)
+
+try:
+    from PyQt5.QtWidgets import (QWidget, QGridLayout, QVBoxLayout, QHBoxLayout,
+                                 QCheckBox, QPushButton, QLabel, QComboBox, QSizePolicy)
+    from PyQt5.QtCore import Qt
+except:
+    from PyQt6.QtWidgets import (QWidget, QGridLayout, QVBoxLayout, QHBoxLayout,
+                                 QCheckBox, QPushButton, QLabel, QComboBox, QSizePolicy)
+    from PyQt6.QtCore import Qt
+    
 from matplotlib.backends.backend_qt5agg import  \
     FigureCanvasQTAgg as FigureCanvas,          \
     NavigationToolbar2QT as NavigationToolbar
@@ -19,7 +27,7 @@ import matplotlib.pyplot as plt
 
 class Plotter(QWidget):
     ''' 
-    Widget to plot the curve for each field.
+    A widget to plot the curve for each field received through the serial link.
     '''
 
     colors = ['gray', 'olive', 'orange' , 'green', 'red', 'purple', 'brown', 'pink', 'blue', 'cyan' ]
@@ -34,14 +42,14 @@ class Plotter(QWidget):
          # and if we don't know their value at this time we can use 'None'.
 
         self.parent    = parent # Main applicaion window
-        self.dict_var  = {}     # The dictionary of the firld to display and plot, with their checkboxes
+        self.dict_var  = {}     # The dictionary of the fields to display and plot, with their checkboxes
         self.fig       = None   # The figure of the plot
         self.ax1       = None   # First Y axis (left side of the plot)
-        self.ax2       = None   # Second Y axis (rifht side of the plot)
+        self.ax2       = None   # Second Y axis (right side of the plot)
         self.canvas    = None   # The canvas for the plot
         self.toolbar   = None   # The matplotlib toolbar
         self.CSV_file  = ""     # The name of a CSV data file to plot
-        self.xlim      = None   # xmin, xmax du tracé
+        self.xlim      = None   # xmin, xmax of the X axis
         self.ylim1     = None   # ymin, ymax for ax1 (left side of the plot)
         self.ylim2     = None   # ymin, ymax for ax2 (left side of the plot)
 
@@ -49,18 +57,23 @@ class Plotter(QWidget):
 
     def __initUI(self):
 
+        print("Plotter.__initUI")
         hbox = QHBoxLayout(self)
         self.setLayout(hbox)
 
-        # la zone de tracé:
+        # The grid to place the widgets:
         trace_box = QGridLayout()
         
-        self.fig, self.ax1 = plt.subplots()   
+        # The left axes:
+        self.fig, self.ax1 = plt.subplots()
         self.ax1.set_title('PID Controler plot')
+        
+        # The right axes:
         self.ax2 = self.ax1.twinx()
+        
         #self.fig.subplots_adjust(left=0.1,right=0.98,bottom=0.1,top=0.95)
         self.canvas  = FigureCanvas(self.fig)
-        self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.canvas.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.fig.tight_layout()
         
         trace_box.addWidget(self.canvas, 0, 0)
@@ -68,37 +81,40 @@ class Plotter(QWidget):
         # The Matplotlib toolbar:
         bar = QHBoxLayout()
         
+        # The Plot button:
         btn = QPushButton('Plot')
         btn.clicked.connect(self.Plot)
         btn.setFixedSize(50,25)
         bar.addWidget(btn)
         
+        # The combo box to choose a CSV file:
         self.CSV_combo = QComboBox()
         self.CSV_combo.addItem('Choose CSV file')
         self.CSV_combo.setFixedSize(250,25)
-        self.CSV_combo.activated[str].connect(self.LoadCSV_File)
+        self.CSV_combo.textActivated[str].connect(self.LoadCSV_File)
         self.CSV_combo.enterEvent = self.FillCVS_Combo
         bar.addWidget(self.CSV_combo)
         bar.addStretch(1)
         
-        trace_box.addLayout(bar, 1,0)
+        trace_box.addLayout(bar, 1, 0)
         
+        # The matplotlib navigation toolbar:
         self.toolbar = NavigationToolbar(self.canvas, self)
         trace_box.addWidget(self.toolbar, 2, 0)
         
-        # The control zone:
+        # The widget grid to organize the check boxes of the fields:
         ctrl_box = QGridLayout()
         ctrl_box.setContentsMargins(2, 2, 2, 2)
         
         for row, ((key, comment), color) in  enumerate(zip(self.parent.monitor_tab.field_prop, Plotter.colors)):
             
-            # skip the "MS" <Elapsed time (ms)> filrd:
+            # skip the "MS" <Elapsed time (ms)> field:
             if key == 'MS': continue
 
             label = QLabel(comment)
             
             check = QCheckBox()
-            check.setStyleSheet("background-color: "+color)
+            check.setStyleSheet("background-color: " + color)
             check.setFixedSize(25, 25)
             check.setStyleSheet("QCheckBox { width:30px; height:30px; border: 10px;}")  
             check.setStyleSheet("QCheckBox::indicator { width:30px; height:30px; border: 3px solid;}")            
@@ -116,6 +132,7 @@ class Plotter(QWidget):
             
             self.dict_var[key]=(check, btn)
 
+            # set the Speed field checked and enable the L/R button:
             if key == 'SPE':
                 check.setChecked(True)
                 btn.setEnabled(True)
@@ -124,10 +141,8 @@ class Plotter(QWidget):
             ctrl_box.addWidget(check, row, 1)
             ctrl_box.addWidget(btn, row, 2)
             
-        for key in self.dict_var:
-            check, btn = self.dict_var[key]
             check.stateChanged.connect(lambda state, k=key: self.select_var(k, state))
-            btn.clicked.connect(lambda state, k=key: self.select_axis(k, state))
+            btn.clicked.connect(lambda state, k=key: self.select_axis(k, state))            
             
         hbox.addLayout(trace_box)
         hbox.addLayout(ctrl_box)
@@ -172,8 +187,8 @@ class Plotter(QWidget):
             if key == "MS": continue
             
             check, btn = self.dict_var[key]
-            # plot only firled with the check widget checked:
-            if not check.checkState(): 
+            # plot only field with the check widget checked:
+            if check.checkState() == Qt.CheckState.Unchecked: 
                 continue
             
             if btn.text() == 'L':
@@ -187,8 +202,8 @@ class Plotter(QWidget):
                                marker='o', markersize=2.8                                                                                                                                                                                                              , markerfacecolor=color,
                                label=comment)
         
-        self.ax1.legend(framealpha=1, loc='upper left')
-        self.ax2.legend(framealpha=1, loc='upper right')
+        if self.ax1.get_legend_handles_labels()[0]: self.ax1.legend(framealpha=1, loc='upper left')
+        if self.ax2.get_legend_handles_labels()[0]: self.ax2.legend(framealpha=1, loc='upper right')
         
         self.ax1.set_xlabel('Time [ms]')
 
@@ -204,11 +219,16 @@ class Plotter(QWidget):
          
          
     def LoadCSV_File(self, CSV_file):
-
+        """
+        to load a CSV file and plot the fields.
+        """
+        
         self.CSV_file = CSV_file
         self.parent.monitor_tab.all_field.clear()
+        
         with open(CSV_file) as F:
             lines = F.readlines()
+            
         for line in lines:
             if line[0] == '#': 
                 continue
@@ -219,5 +239,3 @@ class Plotter(QWidget):
                 self.parent.monitor_tab.all_field.append(values)
                 # update the grapher:                
         self.Plot()
-                
-            

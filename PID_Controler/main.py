@@ -7,8 +7,14 @@ __maintainer__  = "JLC"
 __email__       = "jean-luc.charles@mailo.com"
 
 import sys
-from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
-from PyQt5 import QtWidgets
+
+try:
+    from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
+    from PyQt5 import QtWidgets
+except:
+    from PyQt6.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
+    from PyQt6 import QtWidgets
+    
 from PIDcontrol import PIDcontrol
 
 print(f"Python version {sys.version} - QtAppli (qt v{QT_VERSION_STR}, pyqt_v{PYQT_VERSION_STR})")
@@ -19,4 +25,4 @@ if not qapp:
     qapp = QtWidgets.QApplication(sys.argv)
 
 my_app = PIDcontrol()
-qapp.exec_() 
+qapp.exec() 

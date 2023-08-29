@@ -8,12 +8,21 @@ __email__       = "jean-luc.charles@mailo.com"
 __credits__     = "https://ymt-lab.com/en/post/2021/pyqt5-serial-monitor/"
 
 
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QCheckBox,
-                             QFrame, QPushButton, QTextEdit, QGridLayout, QSizePolicy, QToolBar,
-                             QComboBox)
-from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
-from PyQt5.QtGui import QTextCursor, QFont
+try:
+    from PyQt5 import QtCore, QtGui
+    from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QCheckBox,
+                                 QFrame, QPushButton, QTextEdit, QGridLayout, QSizePolicy, QToolBar,
+                                 QComboBox)
+    from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
+    from PyQt5.QtGui import QTextCursor, QFont
+except:
+    from PyQt6 import QtCore, QtGui
+    from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QCheckBox,
+                                 QFrame, QPushButton, QTextEdit, QGridLayout, QSizePolicy, QToolBar,
+                                 QComboBox)
+    from PyQt6.QtSerialPort import QSerialPort, QSerialPortInfo
+    from PyQt6.QtGui import QTextCursor, QFont
+    
 from time import strftime
 from collections import deque
 from Grapher import Grapher
@@ -29,18 +38,16 @@ class Monitor(QWidget):
     start_char = 'c'
     stop_char  = 'b'
 
-
     def __init__(self, parent):
 
         # Call the base class constructor:
         QWidget.__init__(self, parent)
         
-        # *** Bonnes pratiques  ***
-        #   Définir dans le constructeur les données persistantes en tant 
-        #   qu'attributs, et si on ne connaît pas leur valeur à ce moment 
-        #   on peut utiliser None.
+        # *** Good practices  ***
+         # Define in the constructor the persisted data as attributes, 
+         # and if we don't know their value at this time we can use 'None'.
 
-        self.mw    = parent     # fenêtre principale de l'application
+        self.mw    = parent     # main window of the application
         
         self.port  = None       # The serial port, see xxxxxx 
         self.data  = ""         # the data collected from the serial link 
@@ -56,12 +63,12 @@ class Monitor(QWidget):
         self.field_prop      = []  # the properties of the fields 
         
         # Attributes for plotting:
-        self.figure          = None  # figure pour le tracé
-        self.axes            = None  # système d'axes du tracé
-        self.canvas          = None  # pour le tracé matplot.lib
-        self.toolbar         = None  # barre d'outils du tracé
-        self.plot_xlim       = None  # xmin, xmax du tracé
-        self.plot_ylim       = None  # ymin, ymax du tracé
+        self.figure          = None  # figure for plotting
+        self.axes            = None  # plot axis
+        self.canvas          = None  # matplot.lib canvas
+        self.toolbar         = None  # plot toolbar
+        self.plot_xlim       = None  # plot xmin, xmax
+        self.plot_ylim       = None  # plot ymin, ymax
 
         ### The serial tool bar ###
         self.serial_toolbar  = SerialPortToolBar(self)
@@ -95,12 +102,11 @@ class Monitor(QWidget):
         # TODO: clear Graph
         
     def ProcessInoFile(self):
-        '''Greps lines in the ino file that contain the word "case" to 
+        '''To Grep lines in the .ino file that contain the word "case" to 
            set the labels of the command buttons.
            Expected line pattern is :
            - <case '+':// Accélere>             for a serial input
            - <mess += ",COM,";  // Command>     for a serila output
-           
         '''
         try:    
             with open(Monitor.ino_file, 'r') as f:
@@ -126,11 +132,12 @@ class Monitor(QWidget):
         if flag:
             self.port.setBaudRate( self.serial_toolbar.baudRate() )
             self.port.setPortName( self.serial_toolbar.portName() )
+            #print(self.serial_toolbar.dataBit())
             self.port.setDataBits( self.serial_toolbar.dataBit() )
             self.port.setParity( self.serial_toolbar.parity() )
             self.port.setStopBits( self.serial_toolbar.stopBit() )
             self.port.setFlowControl( self.serial_toolbar.flowControl() )
-            r = self.port.open(QtCore.QIODevice.ReadWrite)
+            r = self.port.open(QtCore.QIODevice.OpenModeFlag.ReadWrite)
             if not r:
                 self.mw.statusText.setText('Port open error')
                 self.serial_toolbar.port_open_btn.setChecked(False)
@@ -180,6 +187,7 @@ class Monitor(QWidget):
         
     def __initUI(self):
         
+        print("Monitor.__initUI")
         grid = QGridLayout()
         self.setLayout(grid)
         grid.addWidget(self.serial_toolbar, 0, 0, 1, 2)
@@ -203,13 +211,14 @@ class SerialDataView(QWidget):
     
     def __init__(self, parent):
         
+        print("SerialDataView.__init__")
         super(SerialDataView, self).__init__(parent)
         
         self.serialData = QTextEdit()
         self.serialData.setReadOnly(True)
         self.serialData.setMinimumSize(650,400)
         self.serialData.setFont(QFont('Courier New', 8))
-        self.serialData.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.serialData.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         self.serialData.setFixedWidth(600)
 
         self.setLayout(QGridLayout())
@@ -217,17 +226,19 @@ class SerialDataView(QWidget):
         self.layout().setContentsMargins(2, 2, 2, 2)
         
     def AppendSerialText(self, appendText, color):
-        self.serialData.moveCursor(QTextCursor.End)
+        self.serialData.moveCursor(QTextCursor.MoveOperation.End)
         self.serialData.setFont(QFont('Courier New', 8))
         self.serialData.setTextColor(color)
         self.serialData.insertPlainText(appendText)
-        self.serialData.moveCursor(QTextCursor.End)
+        self.serialData.moveCursor(QTextCursor.MoveOperation.End)
 
 class SerialSendView(QWidget):
 
     serialSendSignal = QtCore.pyqtSignal(str)
 
     def __init__(self, parent):
+        
+        print("SerialSendView.__init__")
         super(SerialSendView, self).__init__(parent)
 
         self.sendData = QTextEdit()
@@ -244,30 +255,31 @@ class SerialSendView(QWidget):
         self.layout().setContentsMargins(3, 3, 3, 3)
 
     def SendButtonClicked(self):
-        self.serialSendSignal.emit( self.sendData.toPlainText() )
+        self.serialSendSignal.emit(self.sendData.toPlainText())
         self.sendData.clear()        
         
 class FieldWidget(QWidget):
     
     def __init__(self, parent):
         
+        print("FieldWidget.__init__")
         super(FieldWidget, self).__init__(parent)
         self.parent = parent
         
         hbox = QHBoxLayout()
-        hbox.addStretch(1)
+        self.setLayout(hbox)  
         
         for (key, comment) in  parent.field_prop:            
             label = QLabel(f"{key}")
             label.setToolTip(comment)
             label.setFixedSize(125,25)
 
-            h = QHBoxLayout()
             value = QLabel()
             value.setToolTip(comment)
-            value.setFrameStyle(QFrame.StyledPanel)
+            value.setFrameStyle(QFrame.Shape.StyledPanel)
             value.setFixedSize(100,25)
             
+            """
             check = QCheckBox()
             if key == 'SPE':
                 check.setChecked(True)
@@ -275,42 +287,46 @@ class FieldWidget(QWidget):
                 check.setChecked(False)
             check.setFixedSize(25, 25)
             check.stateChanged.connect(lambda state, k=key: self.SelectField(k, state))
-
-            h.addWidget(value)
-            h.addWidget(check)
-            
+            """
             parent.labeled_fields.append((label, value))
+
+            """h = QHBoxLayout()
+            h.addWidget(value)
+            h.addWidget(check)"""
 
             v = QVBoxLayout()
             v.addWidget(label)
-            v.addLayout(h)
+            v.addWidget(value)
+            #v.addLayout(h)
             
             hbox.addLayout(v)
             hbox.addStretch(1)
         
-        hbox.setContentsMargins(2, 2, 2, 2)
-        self.setLayout(hbox)          
+        hbox.setContentsMargins(2, 2, 2, 2)        
     
     def SelectField(self, key, state):
         pass 
            
 class CommandWidget(QWidget):
-    
+    """
+    To build a widget containing one push button for each of the commands that can be sent through
+    the erial link to drive the PID controler.
+    The list of the command labels comes from the 'parent.button_prop' attribute.
+    """
     def __init__(self, parent):
         
+        print("CommandWidget.__init__")
         super(CommandWidget, self).__init__(parent)
         self.parent = parent
         
-        hbox = QHBoxLayout()        
-        i = 0
-        for key, comment in self.parent.button_prop:
+        hbox = QHBoxLayout()  
+        self.setLayout(hbox)
+        
+        for i, (key, comment) in enumerate(self.parent.button_prop):
             
             if key == Monitor.start_char or key == Monitor.stop_char:
                 print(f'skipping <{key}, {comment}>')
                 continue
-
-            if i == 0 or i % 2 != 0: 
-                v = QVBoxLayout()
             
             label = QLabel(comment)
             
@@ -325,21 +341,27 @@ class CommandWidget(QWidget):
             h = QHBoxLayout()    
             h.addWidget(button)
             h.addWidget(label)
+            
+            if i == 0 or i % 2 != 0: 
+                v = QVBoxLayout()
+            
             v.addLayout(h)
             v.addStretch(1)
             
-            hbox.addLayout(v)
-            hbox.addStretch(1)
-            i += 1
+            if i == 0 or i % 2 != 0: 
+                hbox.addLayout(v)
+                hbox.addStretch(1)
 
         hbox.setContentsMargins(2, 2, 2, 2)
-        self.setLayout(hbox)
+        
             
 class SerialPortToolBar(QToolBar):
     '''
     The bar with all the buttons ans combo to configure/open/colse the serial link.
     '''
     def __init__(self, parent):
+        
+        print("SerialPortToolBar.__init__")
         super(SerialPortToolBar, self).__init__(parent)
         
         self.parent = parent
@@ -405,14 +427,14 @@ class SerialPortToolBar(QToolBar):
         return self.port_names.currentText()
 
     def dataBit(self):
-        return int(self.data_bits.currentIndex() + 5)
+        return QSerialPort.DataBits(self.data_bits.currentIndex() + 5)
 
     def parity(self):
-        return self._parity.currentIndex()
+        return QSerialPort.Parity(self._parity.currentIndex())
 
     def stopBit(self):
-        return self.stop_bits.currentIndex()
+        return QSerialPort.StopBits(self.stop_bits.currentIndex())
 
     def flowControl(self):
-        return self._flowControl.currentIndex()
+        return QSerialPort.FlowControl(self._flowControl.currentIndex())
                 
