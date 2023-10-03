@@ -13,12 +13,17 @@ You need to run this PyQt application within a __Python Virtual Environment__ (P
 `conda activate pyml`<br>
 Then in the _console_, update the `conda` command with: `conda update -n base -c defaults conda`<br>
 and populate the PVE with: `conda env update -n minfo --file <path-of-PVE.yml>`<br>
-replacing `<path-of-PVE.yml>` by the acces path of the file `PVE.yml` on your computer (something like `C:\Users\you\...\PVE.yml` found thanks to the file browser).
+replacing `<path-of-PVE.yml>` by the acces path of the file `PVE.yml` on your computer:
+    -[Windows] something like `C:\Users\you\...\PVE.yml` found thanks to the file browser.
+    -[macOS, Linux] something like `/home/users/you/.../PVE.yml` found thanks to the file browser.
  
 When done, to run the application type in the console (with the _minfo_ PVE activated):<br>
 `cd <path-of-folder-"PID_Controler">`<br>
-replacing `<path-of-folder-"PID_Controler">` by the acces path of the folder `PID_Controler` on your computer (something like `C:\Users\you\...\TP_PID-Controler_master\PID_Controler`) found thanks to the file browser.
-Then hust type in:<br>
+replacing `<path-of-folder-"PID_Controler">` by the acces path of the folder `PID_Controler` on your computer:
+-[Windows]: something like `C:\Users\you\...\TP_PID-Controler_master\PID_Controler` found thanks to the file browser.
+-[macOS, Linux]: something like `/home/users/you/.../TP_PID-Controler_master/PID_Controler` found thanks to the file browser.
+
+Then run the application with:<br>
 `python main.py`<br>
 
 
