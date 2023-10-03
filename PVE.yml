@@ -13,6 +13,7 @@ dependencies:
   - jupyter
   - imageio
   - pyserial
+  - pyqtgraph
   - pip:
     - idlex
     
