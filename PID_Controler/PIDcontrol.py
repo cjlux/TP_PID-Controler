@@ -31,24 +31,24 @@ class PIDcontrol(QMainWindow):
     
     def __init__(self):
 
-        # Style simple pour l'appel du constructeur de la classe de base :
+        # call the base class constructor:
         super().__init__()
 
-        # Gestion des répertoires statiques
+        # Managing static directories:
         if not os.path.isdir(PIDcontrol.icone_dir) :
-            print("Répertoire des icônes non trouvé.")
+            print("Icon directory not found.")
             
         # *** Good practices  ***
         # Define in the constructor the persisted data as attributes, 
         # and if we don't know their value at this time we can use 'None'.
 
-        ### Attributs (objets persistants)
+        ### Attributs (persistant data)
         self.menubar = self.menuBar() # indispensable pour Mac
 
-        ### Le gestionnaire d'onglets :
+        ### the tab manager: :
         self.tabs = QTabWidget()
         
-        ### Les onglets de l'applications :        
+        ### The tabs of the application :        
         self.monitor_tab = Monitor(self)
         self.plotter_tab = Plotter(self)
         
@@ -57,8 +57,8 @@ class PIDcontrol(QMainWindow):
         self.statusText = QLabel(self)
         self.statusBar().addWidget(self.statusText)
 
-        self.__initUI()   # Initialisation de l'interface utilisateur
-        self.show()       # Affichage (hérité de la classe de base)
+        self.__initUI()   # initialize the GUI
+        self.show()       # Display the screnn
 
     def __initUI(self):
         '''
@@ -96,6 +96,7 @@ class PIDcontrol(QMainWindow):
         '''
         Load data previously saved in a CSV file
         '''
+        pass
     
     def LoadConfigFile(self):
         pass
@@ -106,7 +107,7 @@ class PIDcontrol(QMainWindow):
         #self.twoPlotsTab.ClearAxes()
 
     def center(self):
-        '''Pour centrer la fenêtre dans l'écran'''
+        '''To center the xindow on the screen'''
         qr = self.frameGeometry()
         cp = self.screen().availableGeometry().center()
 
@@ -116,7 +117,7 @@ class PIDcontrol(QMainWindow):
         
     def closeEvent(self, event):        
         '''
-        redefinition of the closedEvent method, inherited from QWidget,
+        Redefinition of the closedEvent method, inherited from QWidget,
         connected to the QWidget event.QCloseEvent ("closed)
         the window")
         '''        

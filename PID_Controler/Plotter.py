@@ -6,10 +6,12 @@ __date__        = "2023/07/23"
 __maintainer__  = "JLC"
 __email__       = "jean-luc.charles@mailo.com"
 
-
 import numpy as np
 import os
 
+#
+# Try first to import PyQt5 and if it fails import PyQt6
+#
 try:
     from PyQt5.QtWidgets import (QWidget, QGridLayout, QVBoxLayout, QHBoxLayout,
                                  QCheckBox, QPushButton, QLabel, QComboBox, QSizePolicy)

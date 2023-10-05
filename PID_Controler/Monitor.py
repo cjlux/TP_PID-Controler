@@ -7,7 +7,9 @@ __maintainer__  = "JLC"
 __email__       = "jean-luc.charles@mailo.com"
 __credits__     = "https://ymt-lab.com/en/post/2021/pyqt5-serial-monitor/"
 
-
+#
+# Try first to import PyQt5 and if it fails import PyQt6
+#
 try:
     from PyQt5 import QtCore, QtGui
     from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QCheckBox,
@@ -34,7 +36,7 @@ class Monitor(QWidget):
     '''
 
     # Class attributes:
-    ino_file   = "testCodeurTeensy5.ino"
+    ino_file   = "./testCodeurTeensy5/testCodeurTeensy5.ino"
     start_char = 'c'
     stop_char  = 'b'
 

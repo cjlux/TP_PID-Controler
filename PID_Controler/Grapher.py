@@ -6,6 +6,9 @@ __date__        = "2023/07/23"
 __maintainer__  = "JLC"
 __email__       = "jean-luc.charles@mailo.com"
 
+#
+# Try first to import PyQt5 and if it fails import PyQt6
+#
 import pyqtgraph as pg
 
 try:

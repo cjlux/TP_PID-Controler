@@ -8,6 +8,9 @@ __email__       = "jean-luc.charles@mailo.com"
 
 import sys
 
+#
+# Try first to import PyQt5 and if it fails import PyQt6
+#
 try:
     from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
     from PyQt5 import QtWidgets
