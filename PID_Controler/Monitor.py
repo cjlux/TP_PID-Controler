@@ -159,30 +159,35 @@ class Monitor(QWidget):
         
         data = self.port.readAll()
         string = QtCore.QTextStream(data).readAll()
-        #print(string, end="")
         
-        if string[-1] == "\n":
-            self.data += string.strip()
+        if len(string) <= 0: return
+
+        # Display the data in the 'serial_view':        
+        self.serial_view.AppendSerialText(string, QtGui.QColor(0, 0, 0))
+
+        # Extract informations from data
+        index = string.find('\n')
+        while index != -1:
+            self.data += string[:index]
+            string = string[index+1:]
+            
             values = []
             try:
+                # print(f"<{repr(self.data)}>")
                 values = [float(x) for x in self.data.split(',')[1::2]]
-            except:
-                pass
-            
-            if values:
                 for (_, field), value in zip(self.labeled_fields, values):
                     field.setNum(value)   # display the value in the Widget
-                #print(values)
+                # print(values)
                 self.all_field.append(values)
                 # update the grapher:                
                 self.graph_widget.setData(self.all_field)
-                
-            self.data = ""            
-        else:
-            self.data += string
+            except:
+                print(f"err:<{self.data>}")
+            
+            index = string.find('\n')
+            self.data = ""
+        self.data += string
         
-        self.serial_view.AppendSerialText(string, QtGui.QColor(0, 0, 0))
-
     def sendFromPort(self, text):
         self.port.write(text.encode())
         #self.serial_view.AppendSerialText( text, QtGui.QColor(100, 100, 255) )
@@ -312,8 +317,8 @@ class FieldWidget(QWidget):
 class CommandWidget(QWidget):
     """
     To build a widget containing one push button for each of the commands that can be sent through
-    the erial link to drive the PID controler.
-    The list of the command labels comes from the 'parent.button_prop' attribute.
+    the serial link to drive the PID controler.
+    The list of the command labels comes from the attribute 'parent.button_prop'.
     """
     def __init__(self, parent):
         

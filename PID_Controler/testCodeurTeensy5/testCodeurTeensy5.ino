@@ -81,7 +81,7 @@ void setup()
   millis_old = micros();
 
   // INIT TIMER
-  myTimer.begin(timerIsr, 10000);  // 100000 => 0.1s period  change this value to a lower one for more interrupt / seconds
+  myTimer.begin(timerIsr, 1000);  // 100000 => 0.1s period  change this value to a lower one for more interrupt / seconds
 
 }
 
