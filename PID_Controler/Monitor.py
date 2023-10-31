@@ -182,7 +182,7 @@ class Monitor(QWidget):
                 # update the grapher:                
                 self.graph_widget.setData(self.all_field)
             except:
-                print(f"err:<{self.data>}")
+                print(f"err:<{self.data}>")
             
             index = string.find('\n')
             self.data = ""
