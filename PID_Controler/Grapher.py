@@ -23,7 +23,7 @@ import time
 
 class Grapher(QWidget):
         
-    def __init__(self, parent):
+    def __init__(self, parent, start_char, stop_char):
         
         super(Grapher, self).__init__(parent)
 
@@ -32,9 +32,11 @@ class Grapher(QWidget):
         # and if we don't know their value at this time we can use 'None'.
         
         self.parent         = parent
+        self.start_char     = start_char            # the char command for the START btn
+        self.stop_char      = stop_char             # the char commad for the STOP btn
         self.graphWidget    = pg.PlotWidget(self)   # The plotter
         self.startstop_btn  = QPushButton()         # the START/STOP button
-        self.save_btn       = QPushButton()         # the START/STOP button
+        self.save_btn       = QPushButton()         # the save button to write data in a CSV file
         self.file_prefix    = QLineEdit()           # A prefix for the generated fle name
         self.file_name      = QLineEdit()           # To edit the name of the file to save data
         self.graph_length   = QSpinBox()            # The length of the graph
@@ -65,7 +67,7 @@ class Grapher(QWidget):
         self.startstop_btn.setCheckable(True)
         self.startstop_btn.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         self.startstop_btn.setFixedSize(70,25)
-        self.startstop_btn.setToolTip('Send the start/stop command to the controller')
+        self.startstop_btn.setToolTip(f"Send the start ('{self.start_char}') / stop('{self.stop_char}') command ")
         self.startstop_btn.clicked.connect(lambda state: self.StartStop(state))
         line.addWidget(self.startstop_btn)
         line.addStretch(1)

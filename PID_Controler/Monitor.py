@@ -37,8 +37,9 @@ class Monitor(QWidget):
 
     # Class attributes:
     ino_file   = "./testCodeurTeensy5/testCodeurTeensy5.ino"
-    start_char = 'c'
-    stop_char  = 'b'
+    start_char = 's'
+    stop_char  = 'S'
+    nb_button_per_col = 6  # the max number of buttons in each colum
 
     def __init__(self, parent):
 
@@ -78,7 +79,7 @@ class Monitor(QWidget):
         self.port = QSerialPort()
             
         self.serial_view  = SerialDataView(self)
-        self.graph_widget = Grapher(self)
+        self.graph_widget = Grapher(self, Monitor.start_char, Monitor.stop_char)
         #
     	# CSV ASCII output file
     	#
@@ -117,13 +118,16 @@ class Monitor(QWidget):
                     if 'case' in line:
                         key = line.split("'")[1]
                         comment = line.split('//')[-1].strip()
-                        self.button_prop.append((key, comment))
-                        print(f'Found key <{key}> and comment <{comment}> in line "{line}"')
+                        print(f'Found case_key <{key}> and comment <{comment}> in line "{line}"')
+                        if key == Monitor.start_char or key == Monitor.stop_char:
+                            print(f'\t skipping <{key}> for the "button_prop" dictionary>')
+                        else:
+                            self.button_prop.append((key, comment))
                     elif 'mess +=' in line and 'String' not in line:
                         key = line.split('"')[1].replace(',','')
                         comment = line.split('//')[-1].strip()
                         self.field_prop.append((key, comment))
-                        print(f'Found key <{key}> and comment <{comment}> in line <{line}>')
+                        print(f'Found mess_key <{key}> and comment <{comment}> in line <{line}>')
                 
         except:
             print(f"Failed to process file {Monitor.ino_file}")
@@ -326,15 +330,13 @@ class CommandWidget(QWidget):
         super(CommandWidget, self).__init__(parent)
         self.parent = parent
         
+        # The HBox at the bootom of the window that will contain all the 
+        # command buttons
         hbox = QHBoxLayout()  
         self.setLayout(hbox)
         
         for i, (key, comment) in enumerate(self.parent.button_prop):
-            
-            if key == Monitor.start_char or key == Monitor.stop_char:
-                print(f'skipping <{key}, {comment}>')
-                continue
-            
+                        
             label = QLabel(comment)
             
             button = QPushButton()
@@ -349,16 +351,16 @@ class CommandWidget(QWidget):
             h.addWidget(button)
             h.addWidget(label)
             
-            if i == 0 or i % 2 != 0: 
+            if i == 0 or i % parent.nb_button_per_col == 0: 
+                if i > 0:  v.addStretch(1)
+                # new VBox
                 v = QVBoxLayout()
-            
-            v.addLayout(h)
-            v.addStretch(1)
-            
-            if i == 0 or i % 2 != 0: 
                 hbox.addLayout(v)
                 hbox.addStretch(1)
+            
+            v.addLayout(h)
 
+        v.addStretch(1)
         hbox.setContentsMargins(2, 2, 2, 2)
         
             
