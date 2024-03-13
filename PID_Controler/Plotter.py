@@ -40,8 +40,8 @@ class Plotter(QWidget):
         QWidget.__init__(self, parent)
 
         # *** Good practices  ***
-         # Define in the constructor the persisted data as attributes, 
-         # and if we don't know their value at this time we can use 'None'.
+        # Define in the constructor the persisted data as attributes, 
+        # and if we don't know their value at this time we can use 'None'.
 
         self.parent    = parent # Main applicaion window
         self.dict_var  = {}     # The dictionary of the fields to display and plot, with their checkboxes

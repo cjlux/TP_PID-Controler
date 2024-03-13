@@ -91,6 +91,18 @@ class PIDcontrol(QMainWindow):
         qa.setStatusTip("Quit the application")
         qa.triggered.connect(self.Close)
         file_menu.addAction(qa)
+        
+        ##### The menu 'Flags'
+        flag_menu = self.menubar.addMenu('Flags')
+        
+        ### Display serial data :
+        qa = QAction('Display serial data', self)
+        qa.setShortcut('Ctrl+D')
+        qa.setStatusTip("Display the serial data in the monitor tab")
+        qa.triggered.connect(self.DisplaySerialData)
+        qa.setCheckable(True)
+        qa.setChecked(True) 
+        flag_menu.addAction(qa)
            
     def LoadCSV_File(self):
         '''
@@ -143,3 +155,29 @@ class PIDcontrol(QMainWindow):
         if rep == QMessageBox.StandardButton.Yes:
             self.close()
         
+    def DisplaySerialData(self, status):
+        
+        monitor = self.monitor_tab
+        grid = monitor.layout()
+            
+        if status == False:
+            item = grid.itemAtPosition(1,0)
+            widget = item.widget()
+            grid.removeWidget(widget)
+            widget.setVisible(False)
+            
+            item = grid.itemAtPosition(1,1)
+            widget = item.widget()
+            grid.removeWidget(widget)
+            
+            grid.addWidget(monitor.graph_widget, 1, 0, 1, 2)
+            
+        else:            
+            item = grid.itemAtPosition(1,0)
+            widget = item.widget()
+            grid.removeWidget(widget)
+                        
+            grid.addWidget(monitor.serial_view, 1, 0)
+            grid.addWidget(monitor.graph_widget, 1, 1)
+            monitor.serial_view.setVisible(True)
+            monitor.graph_widget.setVisible(True)

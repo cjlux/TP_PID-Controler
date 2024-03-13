@@ -91,8 +91,8 @@ class Grapher(QWidget):
 
         line.addWidget(self.file_name)
         
-        self.save_btn.setText("Save")
-        self.save_btn.setFixedSize(50, 25)
+        self.save_btn.setText("Save CSV")
+        self.save_btn.setFixedSize(70, 25)
         self.save_btn.setEnabled(False)
         self.save_btn.setToolTip('Save the graph data to the CSV file')
         self.save_btn.clicked.connect(self.SaveData)
